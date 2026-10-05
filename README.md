@@ -61,24 +61,25 @@ presented to the user.
 
 ### `search_listings`
 
-- **What it does:**
-- **Inputs:** <!-- name and type each: `max_price` (float), not "a price" -->
-- **Returns:**
-- **When it has nothing:**
+- **What it does:** Searches the clothing listings by description keywords. Includes optional size and max price parameters that are used to filter listings. The
+size matching is exact and the max price is inclusive.
+- **Inputs:** `description` (str), `size` (str or None), `max_price` (float or None)
+- **Returns:** List of matching listings (dictionaries) which are ranked by how well they match description keywords and then cheaper price. Each dictionary includes information such as title, description, price, size, and condition
+- **When it has nothing:** Returns an empty list []
 
 ### `suggest_outfit`
 
-- **What it does:**
-- **Inputs:**
-- **Returns:**
-- **When it has nothing:**
+- **What it does:** Generates two outfit suggestions centered on a listing the user has selected. It draws on pieces from the user's saved wardrobe whenever any are available.
+- **Inputs:** `new_item` (dict) - a listing, `wardrobe` (dict)
+- **Returns:** A non-empty str containing two outfit suggestions. If the wardrobe has items, the text names those pieces exactly as they are written in the wardrobe.
+- **When it has nothing:** If the wardrobe is empty, the system still returns general outfit ideas and states that they are general because no wardrobe has been saved.
 
 ### `create_fit_card`
 
-- **What it does:**
-- **Inputs:**
-- **Returns:**
-- **When it has nothing:**
+- **What it does:** Writes a short, social-media-style caption about the selected clothing item and how it could be worn.
+- **Inputs:** `outfit` (str), `new_item` (dict) - a listing
+- **Returns:** A str of two to four sentences that includes the item's price written with digits (ex: $25) and the platform it is being sold on.
+- **When it has nothing:** If outfit is empty or only whitespace, it returns a helpful fallback message. It does not call the model or raise an exception.
 
 ---
 
@@ -95,13 +96,19 @@ presented to the user.
      The grader checks your code against what you claim here, so the file and
      function have to be real. -->
 
-**Branch rule:**
+**Branch rule:** If `search_listings` returns an empty list, write a message "no matching listings found" in the session and stop without calling `suggest_outfit` or `create_fit_card`.
+Otherwise, take the first result (highest ranked) as the selected listing and call `suggest_outfit` with it and the user's wardrobe. Then pass the returned outfit string and the selected listing to `create_fit_card`.
 
 **Where it lives:** `agent.py::run_agent`
 
-**How the query is parsed:** <!-- regex, string splitting, or asking the model — say which -->
+**How the query is parsed:** The user query is parsed by asking the model to extract parameters from the query <!-- regex, string splitting, or asking the model — say which -->
 
 **What moves through the session:** <!-- which fields, in what order -->
+1. `query`: the user's original request.
+2. `results`: the list returned by `search_listings`. If it is empty, message is set and the loop ends here.
+3. `selected_listing`: the first item in `results`.
+4. `outfit`: the string returned by `suggest_outfit(new_item=selected_listing, wardrobe=wardrobe)`.
+5. `fit_card`: the string returned by `create_fit_card(outfit=outfit, new_item=selected_listing)`.
 
 ---
 
@@ -149,9 +156,9 @@ $ python -c "from tools import create_fit_card; ..."
 
 **Moment 1**
 
-- *What I asked for:*
-- *What came back:*
-- *What I changed:*
+- *What I asked for:* I asked Claude to provide descriptions for the tool inventory.
+- *What came back:* Claude gave descriptions for 'what it does' and 'when it has nothing.'
+- *What I changed:* I changed my descriptions to utilize what Claude returned.
 
 **Moment 2**
 

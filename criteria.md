@@ -25,9 +25,8 @@ Given a query that matches at least one listing, the agent completes all three
 tool calls and returns a fit card — in at least 4 of 5 tries.
 
 **Why this target:**
-<!-- Why 4 of 5 and not 5 of 5? Something about your search, probably —
-     "my search is a plain keyword match and some phrasings will miss" is a
-     real answer. -->
+4 of 5 because the happy path depends on inputs that can vary between runs. If the search uses a plain keyword match, some phrasings of a valid
+query can miss. Also, the final fit card could be incorrect if it is missing the price.
 
 ---
 
@@ -37,12 +36,13 @@ Given a query that matches no listings, the agent stops before calling
 `suggest_outfit` and returns a message naming what to change — 5 of 5 tries.
 
 **Why this target:**
-<!-- Why is 5 of 5 reasonable here when criterion 1 isn't? What's different
-     about this path? -->
+5 of 5 is reasonable because this path is deterministic: an empty list from search_listings triggers the branch rule, and no model call is involved in deciding to stop or in producing the message.
 
 ---
 
-## 3. Something about state
+## 3. Selected listing is the same accross a run of `suggest_outfit` and `create_fit_card`
+
+Check the highest ranked listing in the list returned returned by `search_listings`. This listing should be the same as the `new_item` parameter in `suggest_outfit` and `create_fit_card` in 5 of 5 tries.
 
 <!-- YOU WRITE THIS ONE.
 
@@ -57,12 +57,14 @@ Given a query that matches no listings, the agent stops before calling
 
 
 **Why this target:**
-
+The state needs to be correct for sequential tool calls to function properly. It doesn't make sense to select a certain listing and then suggest an outfit and create a fit card using a different listing. So, it should aim for perfect accuracy.
 
 
 ---
 
-## 4. Something about the fit card
+## 4. Fit card descriptions must contain price and should be identifiable between similar listings
+
+Each fit card needs to contain the price of the listing. The description of any given listing should be identifiable against the descriptions of similar listings 5 of 5 times.
 
 <!-- YOU WRITE THIS ONE.
 
@@ -78,12 +80,15 @@ Given a query that matches no listings, the agent stops before calling
 
 
 **Why this target:**
-
+The fit card should contain the price, as it is a vital part of the listing. Fit card descriptions should be unique to the listing as they aim to describe the clothing item
+in a presentable way, and each clothing item in different. So, it should aim for perfect accuracy.
 
 
 ---
 
-## 5. Your choice
+## 5. If the wardrobe is empty, `suggest_outfit` always mentions that the wardrobe is empty in the output string
+
+Intended behavior: `suggest_outfit` utilizes listings in the wardrobe. When the wardrobe is empty, the tool should notify the user and tell them that the wardrobe can be updated 4 of 5 times.
 
 <!-- YOU WRITE THIS ONE TOO.
 
@@ -95,7 +100,7 @@ Given a query that matches no listings, the agent stops before calling
 
 
 **Why this target:**
-
+Since the wardrobe is an important part of this system, the output string should notify the user if the wardrobe is empty when using `suggest_outfit`. 4 of 5 times as there could be some inconsistency with model outputs.
 
 
 ---

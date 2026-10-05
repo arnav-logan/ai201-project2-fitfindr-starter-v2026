@@ -40,7 +40,9 @@
 ## What This Does
 
 <!-- Three or four sentences: what a user asks for, and what they get back. -->
-
+The FitFindr agent takes user queries describing specific clothing items and returns listings that match the query. The system is also able to store clothing items in a wardrobe
+and suggest outfits to the user that contain items from the wardrobe. Another functionality is that the system can generate short descriptions of item listings to summarize information
+presented to the user.
 
 
 ---

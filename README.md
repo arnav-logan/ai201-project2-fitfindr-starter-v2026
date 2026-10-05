@@ -101,7 +101,7 @@ Otherwise, take the first result (highest ranked) as the selected listing and ca
 
 **Where it lives:** `agent.py::run_agent`
 
-**How the query is parsed:** The user query is parsed by asking the model to extract parameters from the query <!-- regex, string splitting, or asking the model — say which -->
+**How the query is parsed:** The user query is parsed by used Regex to extract keywords. <!-- regex, string splitting, or asking the model — say which -->
 
 **What moves through the session:** <!-- which fields, in what order -->
 1. `query`: the user's original request.

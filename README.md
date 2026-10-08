@@ -271,12 +271,34 @@ that produced it:
 **Happy path**
 
 ```
+[1] Parsed query
+      in:  dict with keys: query
+      out: dict with keys: description, size, max_price
+[2] search_listings
+      in:  dict with keys: description, size, max_price
+      out: 4 items: Oversized Flannel Shirt — Plaid Red/Black, Oversized College Crewneck — Faded Red, Vintage Polo Shirt — Forest Green … +1 more
+[3] select_item
+      in:  dict with keys: search_results
+      out: Oversized Flannel Shirt — Plaid Red/Black ($22.0, thredUp)
+      →    Selected top-ranked item from list of matching items
+[4] suggest_outfit
+      in:  dict with keys: selected_item, wardrobe
+      out: Hey friend! So excited for you—that Woolrich oversized red and black flannel is an absolute vintage score. It'…
+[5] create_fit_card
+      in:  dict with keys: outfit_suggestion, selected_item
+      out: Scored this vintage oversized Woolrich red and black flannel on thredUp for only $22 and it is the ultimate gr…
 
 ```
 
 **Empty search**
 
 ```
+[1] Parsed query
+      in:  dict with keys: query
+      out: dict with keys: description, size, max_price
+[2] search_listings
+      in:  dict with keys: description, size, max_price
+      out: [] (empty)
 
 ```
 
@@ -285,6 +307,8 @@ behaved differently afterwards. If the rewire didn't work, say exactly where it
 broke — the error text and the last thing that worked. That earns the point in
 full. -->
 
+The `mcp_server.py` file was changed to establish the tool and `agent.py` was changed to now use the server instead of directly calling the tool.
+Everything worked the same after the change.
 
 
 ---

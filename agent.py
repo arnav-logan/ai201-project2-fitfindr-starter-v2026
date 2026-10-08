@@ -15,6 +15,7 @@ Build and test your three tools in `tools.py` first. Then come here.
 
 import config
 import trace
+from trace import step, start_trace, get_trace
 from tools import search_listings, suggest_outfit, create_fit_card
 from generate import ModelUnavailable
 import re
@@ -113,6 +114,7 @@ def run_agent(query: str, wardrobe: dict) -> dict:
     session = new_session(query, wardrobe)
     step = "parse"
     count = 0
+    start_trace()
 
     while True:
         count += 1
@@ -120,6 +122,7 @@ def run_agent(query: str, wardrobe: dict) -> dict:
 
         if step == "parse":
             session["parsed"] = _parse_query(session["query"])
+            trace.step("Parsed query", inputs={"query": session["query"]}, returned=session["parsed"])
             step = "search"
 
         elif step == "search":
@@ -129,6 +132,7 @@ def run_agent(query: str, wardrobe: dict) -> dict:
                 {"description" : parsed["description"], "size": parsed["size"], "max_price": parsed["max_price"]}
             )
             session["search_results"] = results
+            trace.step("search_listings", inputs={"description": parsed["description"], "size": parsed["size"], "max_price": parsed["max_price"]}, returned=results)
 
             # THE BRANCH: nothing came back, so stop before suggest_outfit
             if not results:
@@ -139,17 +143,20 @@ def run_agent(query: str, wardrobe: dict) -> dict:
         elif step == "select":
             session["selected_item"] = session["search_results"][0]
             step = "outfit"
+            trace.step("select_item", inputs={"search_results": session["search_results"]}, returned=session["search_results"][0], note="Selected top-ranked item from list of matching items")
 
         elif step == "outfit":
             session["outfit_suggestion"] = suggest_outfit(
                 session["selected_item"], session["wardrobe"]
             )
             step = "card"
+            trace.step("suggest_outfit", inputs={"selected_item": session["selected_item"], "wardrobe": session["wardrobe"]}, returned=session["outfit_suggestion"])
 
         elif step == "card":
             session["fit_card"] = create_fit_card(
                 session["outfit_suggestion"], session["selected_item"]
             )
+            trace.step("create_fit_card", inputs={"outfit_suggestion": session["outfit_suggestion"], "selected_item": session["selected_item"]}, returned=session["fit_card"])
             return session
 
 

@@ -141,11 +141,11 @@ def suggest_outfit(new_item: dict, wardrobe: dict) -> str:
 
     if not items:
         prompt = (
-            "You are a friendly thrift-fashion stylist.\n\n"
+            "You are a friendly fashion expert that specializes in thrift finds.\n\n"
             f"The user is considering this second-hand find:\n{listing_text}\n\n"
             "Suggest TWO different outfits built around this item. The user "
             "has no saved wardrobe, so use general, commonly owned pieces "
-            "(e.g. 'straight-leg jeans', 'white sneakers'). Give each outfit "
+            "(e.g. 'blue jeans', 'white sneakers'). Give each outfit "
             "a short label and one or two sentences. Do not mention that "
             "there is no wardrobe; that note is added separately."
         )
@@ -155,7 +155,7 @@ def suggest_outfit(new_item: dict, wardrobe: dict) -> str:
     else:
         wardrobe_text = "\n".join(f"- {_describe_wardrobe_item(i)}" for i in items)
         prompt = (
-            "You are a friendly thrift-fashion stylist.\n\n"
+            "You are a friendly fashion expert that specializes in thrift finds.\n\n"
             f"The user is considering this second-hand find:\n{listing_text}\n\n"
             f"Here is what they already own:\n{wardrobe_text}\n\n"
             "Suggest TWO different outfits built around the new item. Each "
@@ -211,7 +211,7 @@ def create_fit_card(outfit: str, new_item: dict) -> str:
     prompt = (
         "You write captions for social media posts about second-hand fashion "
         "finds. Write like a real person posting their thrift haul, not like "
-        "a product description.\n\n"
+        "a product description. However, make sure to have a focus on the outfit and the find \n\n"
         f"The find: {title}\n"
         f"Price: {price_text or 'unknown'}\n"
         f"Platform: {platform}\n"
